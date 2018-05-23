@@ -77,29 +77,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(5000); // two minute interval
+        mLocationRequest.setInterval(5000); // 5 second interval
         mLocationRequest.setFastestInterval(5000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED) {
-                //Location Permission already granted
-                mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
-                mMap.setMyLocationEnabled(true);
-            } else {
-                //Request Location Permission
-                checkLocationPermission();
-            }
-        }
-        else {
-            mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
-            //mMap.setMyLocationEnabled(true);
-        }
+        requestForGPSUpdates();
 
         //Listener when you click on the map. We will use this to set the destination
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng destination) {
+
+
                 mMap.clear();
                 mCurrLocationMarker= mMap.addMarker(new MarkerOptions().position(new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()))
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))
@@ -124,9 +113,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 LatLng startPoint = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
                 showCurvedPolyline(startPoint, destination,0.2);
+
+
             }
         });
+
+
+
     }
+
+
+    /**
+     * Function to check if the app has permission to GPS
+     */
+    private void requestForGPSUpdates() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED) {
+                //Location Permission already granted
+                mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
+                mMap.setMyLocationEnabled(true);
+            } else {
+                //Request Location Permission
+                checkLocationPermission();
+            }
+        }
+        else {
+            mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
+            //mMap.setMyLocationEnabled(true);
+        }
+    }
+
+
 
     /**
      * Core of the app. The location callback handles location updates. If The GPS location changes, that GPS data is brought to This function
