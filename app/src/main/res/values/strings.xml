@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">FusedLocationProvider</string>
+    <string name="title_activity_maps">Map</string>
+</resources>
